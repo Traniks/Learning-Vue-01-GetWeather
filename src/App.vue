@@ -21,7 +21,6 @@ function updateCity(val) {
 const apiKey = import.meta.env.VITE_WEATHER_API_KEY;
 
 async function getWeather(e) {
-	console.log('Отправка формы, город:', city.value);
 	e.preventDefault();
 
 	if (city.value.trim().length < 2) {
@@ -47,9 +46,7 @@ async function getWeather(e) {
 </script>
 
 <!-- TODO: 
-1) Переписать на axios, 
-2) Добавить иконки погоды, 
-3) Добавить анимацию при загрузке данных -->
+1) Переписать на axios  -->
 
 <template>
 	<section class="w-2/5 mx-auto rounded-4xl bg-gray-800 p-5 text-center text-white">
