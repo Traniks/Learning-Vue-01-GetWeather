@@ -1,5 +1,6 @@
 <script setup>
 import { ref, computed } from 'vue'
+import axios from 'axios'
 
 import WeatherForm from './components/WeatherForm.vue'
 import WeatherInfo from './components/WeatherInfo.vue'
@@ -33,10 +34,15 @@ async function getWeather(e) {
 	}
 
 	try {
-		const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city.value)}&appid=${apiKey}&lang=ru&units=metric`);
-		if (!res.ok) throw new Error('Город не найден');
-		const data = await res.json();
-		weather.value = data;
+		const res = await axios.get('https://api.openweathermap.org/data/2.5/weather', {
+			params: {
+				q: city.value,
+				appid: apiKey,
+				lang: 'ru',
+				units: 'metric'
+			}
+		});
+		weather.value = res.data;
 	} catch (e) {
 		error.value = true;
 		errorText.value = 'Ошибка получения данных о погоде';
@@ -44,9 +50,6 @@ async function getWeather(e) {
 	}
 }
 </script>
-
-<!-- TODO: 
-1) Переписать на axios  -->
 
 <template>
 	<section class="w-2/5 mx-auto rounded-4xl bg-gray-800 p-5 text-center text-white">
