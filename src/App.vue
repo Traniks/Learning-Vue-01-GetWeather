@@ -46,9 +46,7 @@ async function getWeather(e) {
 		});
 		weather.value = res.data;
 	} catch (e) {
-		error.value = true;
-		errorText.value = 'Ошибка получения данных о погоде';
-		weather.value = null;
+		handleWeatherError(e, false);
 	} finally {
 		loading.value = false;
 	}
@@ -79,9 +77,7 @@ async function getWeatherByLocation() {
 			error.value = false;
 			errorText.value = '';
 		} catch (e) {
-			error.value = true;
-			errorText.value = 'Ошибка получения данных по геолокации';
-			weather.value = null;
+			handleWeatherError(e, true);
 		} finally {
 			loading.value = false;
 		}
@@ -90,6 +86,28 @@ async function getWeatherByLocation() {
 		errorText.value = 'Не удалось получить геолокацию';
 		loading.value = false;
 	});
+}
+
+function handleWeatherError(e, isGeo = false) {
+	error.value = true;
+	weather.value = null;
+	if (e.response) {
+		if (e.response.status === 404) {
+			errorText.value = isGeo
+				? 'Местоположение не найдено.'
+				: 'Город не найден. Проверьте правильность написания.';
+		} else if (e.response.status === 401) {
+			errorText.value = 'Ошибка авторизации. Проверьте API-ключ.';
+		} else {
+			errorText.value = `Ошибка сервера: ${e.response.status}`;
+		}
+	} else if (e.request) {
+		errorText.value = 'Нет ответа от сервера. Проверьте соединение с интернетом.';
+	} else {
+		errorText.value = isGeo
+			? 'Неизвестная ошибка при получении данных по геолокации.'
+			: 'Неизвестная ошибка при получении данных о погоде.';
+	}
 }
 </script>
 
