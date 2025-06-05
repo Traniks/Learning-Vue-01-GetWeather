@@ -94,14 +94,14 @@ async function getWeatherByLocation() {
 </script>
 
 <template>
-	<section class="w-2/5 mx-auto rounded-4xl bg-gray-800 p-5 text-center text-white">
-		<h1 class="text-3xl mt-4">Погодные приложение</h1>
-		<p class="text-lg mt-2 mb-4">Узнать погоду в
+	<section class="w-100% max-w-[800px] m-5 p-5 rounded-4xl bg-gray-800 text-center text-white md:w-3/5 xl:w-2/5 md:mx-auto">
+		<h1 class="text-xl md:text-3xl mt-4">Погодные приложение</h1>
+		<p class="text-base md:text-lg mt-2 mb-4">Узнать погоду в
 			<span class="underline decoration-emerald-500">{{ cityDisplay }}</span>
 		</p>
 
 		<WeatherForm :city="city.value" :error="error.value" @update:city="updateCity" @submit="getWeather" />
-		<button class="mt-2 mb-4 px-4 py-2 bg-emerald-700 rounded-lg hover:bg-emerald-900 transition-colors"
+		<button class="my-4 px-4 py-2 bg-emerald-500 rounded-lg hover:bg-emerald-700 transition-colors cursor-pointer"
 			@click="getWeatherByLocation" :disabled="loading">
 			Определить местоположение
 		</button>
