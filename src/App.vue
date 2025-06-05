@@ -10,6 +10,7 @@ const city = ref('');
 const error = ref(false);
 const errorText = ref('');
 const weather = ref(null);
+const loading = ref(false); // Для спиннера (по желанию)
 
 const cityDisplay = computed(() => {
 	return city.value === '' ? '«Вашем городе»' : `«${city.value}»`
@@ -34,6 +35,7 @@ async function getWeather(e) {
 	}
 
 	try {
+		loading.value = true;
 		const res = await axios.get('https://api.openweathermap.org/data/2.5/weather', {
 			params: {
 				q: city.value,
@@ -47,7 +49,47 @@ async function getWeather(e) {
 		error.value = true;
 		errorText.value = 'Ошибка получения данных о погоде';
 		weather.value = null;
+	} finally {
+		loading.value = false;
 	}
+}
+
+async function getWeatherByLocation() {
+	if (!navigator.geolocation) {
+		error.value = true;
+		errorText.value = 'Геолокация не поддерживается вашим браузером';
+		return;
+	}
+	
+	loading.value = true;
+	navigator.geolocation.getCurrentPosition(async (position) => {
+		const { latitude, longitude } = position.coords;
+		try {
+			const res = await axios.get('https://api.openweathermap.org/data/2.5/weather', {
+				params: {
+					lat: latitude,
+					lon: longitude,
+					appid: apiKey,
+					lang: 'ru',
+					units: 'metric'
+				}
+			});
+			weather.value = res.data;
+			city.value = res.data.name;
+			error.value = false;
+			errorText.value = '';
+		} catch (e) {
+			error.value = true;
+			errorText.value = 'Ошибка получения данных по геолокации';
+			weather.value = null;
+		} finally {
+			loading.value = false;
+		}
+	}, () => {
+		error.value = true;
+		errorText.value = 'Не удалось получить геолокацию';
+		loading.value = false;
+	});
 }
 </script>
 
@@ -59,6 +101,10 @@ async function getWeather(e) {
 		</p>
 
 		<WeatherForm :city="city.value" :error="error.value" @update:city="updateCity" @submit="getWeather" />
+		<button class="mt-2 mb-4 px-4 py-2 bg-emerald-700 rounded-lg hover:bg-emerald-900 transition-colors"
+			@click="getWeatherByLocation" :disabled="loading">
+			Определить местоположение
+		</button>
 		<ErrorMessage :errorText="errorText" />
 
 		<WeatherInfo :weather="weather" />
