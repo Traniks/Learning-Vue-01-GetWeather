@@ -23,6 +23,12 @@ function updateCity(val) {
 	city.value = val;
 }
 
+const isDark = ref(false)
+function toggleTheme() {
+	isDark.value = !isDark.value
+	document.documentElement.classList.toggle('dark', isDark.value)
+}
+
 const apiKey = import.meta.env.VITE_WEATHER_API_KEY;
 
 async function getWeather(e) {
@@ -114,13 +120,23 @@ function handleWeatherError(e, isGeo = false) {
 }
 </script>
 
+<!-- TODO:
+2)Валидация ввода
+3)Погода по клику на карте -->
+
 <template>
 	<section
-		class="w-100% max-w-[800px] m-5 p-5 rounded-4xl bg-gray-800 text-center text-white md:w-3/5 xl:w-2/5 md:mx-auto">
+		class="w-100% max-w-[800px] m-5 p-5 rounded-4xl bg-gray-800 text-center text-white md:w-3/5 xl:w-2/5 md:mx-auto dark:bg-gray-800 dark:shadow-xl dark:ring dark:ring-gray-900/5">
 
-		<button @click="locale = locale === 'ru' ? 'en' : 'ru'" class="mb-4 px-2 py-1 bg-gray-700 rounded">
-			{{ locale === 'ru' ? 'EN' : 'RU' }}
-		</button>
+		<div class="w-full flex gap-3 justify-end">
+			<button @click="locale = locale === 'ru' ? 'en' : 'ru'"
+				class="px-2 py-1 bg-gray-700 rounded cursor-pointer">
+				{{ locale === 'ru' ? 'EN' : 'RU' }}
+			</button>
+			<button @click="toggleTheme" class="px-2 py-1 bg-gray-700 rounded cursor-pointer">
+				{{ isDark ? '🌙' : '☀️' }}
+			</button>
+		</div>
 
 		<h1 class="text-xl md:text-3xl mt-4">{{ t('title') }}</h1>
 		<p class="text-base md:text-lg mt-2 mb-4">{{ t('weatherIn') }}

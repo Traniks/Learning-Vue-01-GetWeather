@@ -1,6 +1,9 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 #app {
     @apply flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-orange-400 to-cyan-400;
+    @apply dark:from-gray-900 dark:to-gray-900;
     font-family: 'Roboto', Arial, sans-serif;
 }
