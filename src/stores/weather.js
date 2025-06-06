@@ -1,41 +1,43 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-
 import { fetchWeatherByCity, fetchWeatherByCoords } from '@/stores/weatherApi.js'
 import { useI18n } from 'vue-i18n'
 
 export const useWeatherStore = defineStore('weather', () => {
-    const { t, locale } = useI18n()
+	const { t, locale } = useI18n()
 
 	const city = ref('')
 	const error = ref(false)
-	const errorText = ref('')
+	const errorCode = ref('')
 
 	const weather = ref(null)
 	const loading = ref(false)
-
 	const mapCoords = ref([55.751244, 37.618423])
-    const apiKey = import.meta.env.VITE_WEATHER_API_KEY
+	const apiKey = import.meta.env.VITE_WEATHER_API_KEY
 
 	const cityDisplay = computed(() => {
 		return city.value === '' ? `«${t('yourCity')}»` : `«${city.value}»`
 	})
+	
+	const errorText = computed(() =>
+		errorCode.value ? t(errorCode.value) : ''
+	)
 
 	function updateCity(val) {
 		city.value = val
 		error.value = false
-		errorText.value = ''
+		errorCode.value = ''
 	}
 
-    async function getWeather(e) {
+	async function getWeather(e) {
 		if (e) e.preventDefault()
 		const cityPattern = /^[a-zA-Zа-яА-ЯёЁ\s-]+$/u
 		if (city.value.trim().length < 2 || !cityPattern.test(city.value)) {
-			errorText.value = t('invalidCity')
+			errorCode.value = 'invalidCity'
 			error.value = true
 			return
 		} else {
-			errorText.value = ''
+			errorCode.value = ''
 			error.value = false
 		}
 		try {
@@ -54,10 +56,10 @@ export const useWeatherStore = defineStore('weather', () => {
 		}
 	}
 
-    async function getWeatherByCoords(coords) {
+	async function getWeatherByCoords(coords) {
 		loading.value = true
 		error.value = false
-		errorText.value = ''
+		errorCode.value = ''
 		try {
 			const res = await fetchWeatherByCoords(
 				coords[0],
@@ -75,10 +77,10 @@ export const useWeatherStore = defineStore('weather', () => {
 		}
 	}
 
-    async function getWeatherByLocation() {
+	async function getWeatherByLocation() {
 		if (!navigator.geolocation) {
 			error.value = true
-			errorText.value = t('geoNotSupported')
+			errorCode.value = 'geoNotSupported'
 			return
 		}
 		loading.value = true
@@ -95,7 +97,7 @@ export const useWeatherStore = defineStore('weather', () => {
 					weather.value = res.data
 					city.value = res.data.name
 					error.value = false
-					errorText.value = ''
+					errorCode.value = ''
 					mapCoords.value = [latitude, longitude]
 				} catch (e) {
 					handleWeatherError(e, true)
@@ -105,33 +107,31 @@ export const useWeatherStore = defineStore('weather', () => {
 			},
 			() => {
 				error.value = true
-				errorText.value = t('geoDenied')
+				errorCode.value = 'geoDenied'
 				loading.value = false
 			}
 		)
 	}
 
-    function handleWeatherError(e, isGeo = false) {
+	function handleWeatherError(e, isGeo = false) {
 		error.value = true
 		weather.value = null
 		if (e.response) {
 			if (e.response.status === 404) {
-				errorText.value = isGeo ? t('geoNotFound') : t('cityNotFound')
+				errorCode.value = isGeo ? 'geoNotFound' : 'cityNotFound'
 			} else if (e.response.status === 401) {
-				errorText.value = t('apiError')
+				errorCode.value = 'apiError'
 			} else {
-				errorText.value = t('serverError', {
-					status: e.response.status,
-				})
+				errorCode.value = 'serverError'
 			}
 		} else if (e.request) {
-			errorText.value = t('noResponse')
+			errorCode.value = 'noResponse'
 		} else {
-			errorText.value = isGeo ? t('geoUnknown') : t('unknown')
+			errorCode.value = isGeo ? 'geoUnknown' : 'unknown'
 		}
 	}
 
-    const isDark = ref(false)
+	const isDark = ref(false)
 	function toggleTheme() {
 		isDark.value = !isDark.value
 		document.documentElement.classList.toggle('dark', isDark.value)
@@ -145,10 +145,11 @@ export const useWeatherStore = defineStore('weather', () => {
 		loading,
 		mapCoords,
 		cityDisplay,
+		isDark,
 		updateCity,
 		getWeather,
 		getWeatherByCoords,
-        getWeatherByLocation,
+		getWeatherByLocation,
 		toggleTheme,
 	}
 })
