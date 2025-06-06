@@ -34,7 +34,8 @@ const apiKey = import.meta.env.VITE_WEATHER_API_KEY;
 async function getWeather(e) {
 	e.preventDefault();
 
-	if (city.value.trim().length < 2) {
+	const cityPattern = /^[a-zA-Zа-яА-ЯёЁ\s-]+$/u;
+	if (city.value.trim().length < 2 || !cityPattern.test(city.value)) {
 		errorText.value = t('invalidCity');
 		error.value = true;
 		return;
@@ -121,7 +122,6 @@ function handleWeatherError(e, isGeo = false) {
 </script>
 
 <!-- TODO:
-2)Валидация ввода
 3)Погода по клику на карте -->
 
 <template>
