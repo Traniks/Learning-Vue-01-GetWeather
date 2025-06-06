@@ -23,6 +23,8 @@ export const useWeatherStore = defineStore('weather', () => {
 
 	function updateCity(val) {
 		city.value = val
+		error.value = false
+		errorText.value = ''
 	}
 
     async function getWeather(e) {
