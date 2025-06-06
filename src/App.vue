@@ -6,6 +6,7 @@ import axios from 'axios'
 import WeatherForm from './components/WeatherForm.vue'
 import WeatherInfo from './components/WeatherInfo.vue'
 import ErrorMessage from './components/ErrorMessage.vue'
+import MapWeather from './components/MapWeather.vue'
 
 const { t, locale } = useI18n()
 
@@ -14,6 +15,8 @@ const error = ref(false);
 const errorText = ref('');
 const weather = ref(null);
 const loading = ref(false); // Для спиннера (по желанию)
+
+const mapCoords = ref([55.751244, 37.618423]) // Москва по умолчанию
 
 const cityDisplay = computed(() => {
 	return city.value === '' ? `«${t('yourCity')}»` : `«${city.value}»`
@@ -55,6 +58,7 @@ async function getWeather(e) {
 			}
 		});
 		weather.value = res.data;
+		mapCoords.value = [res.data.coord.lat, res.data.coord.lon]
 	} catch (e) {
 		handleWeatherError(e, false);
 	} finally {
@@ -86,6 +90,7 @@ async function getWeatherByLocation() {
 			city.value = res.data.name;
 			error.value = false;
 			errorText.value = '';
+			mapCoords.value = [latitude, longitude];
 		} catch (e) {
 			handleWeatherError(e, true);
 		} finally {
@@ -117,6 +122,30 @@ function handleWeatherError(e, isGeo = false) {
 		errorText.value = isGeo
 			? t('geoUnknown')
 			: t('unknown');
+	}
+}
+
+async function getWeatherByCoords(coords) {
+	loading.value = true
+	error.value = false
+	errorText.value = ''
+	try {
+		const res = await axios.get('https://api.openweathermap.org/data/2.5/weather', {
+			params: {
+				lat: coords[0],
+				lon: coords[1],
+				appid: apiKey,
+				lang: locale.value,
+				units: 'metric'
+			}
+		})
+		weather.value = res.data
+		city.value = res.data.name
+		mapCoords.value = coords
+	} catch (e) {
+		handleWeatherError(e, true)
+	} finally {
+		loading.value = false
 	}
 }
 </script>
@@ -152,6 +181,7 @@ function handleWeatherError(e, isGeo = false) {
 		<ErrorMessage :errorText="errorText" />
 
 		<WeatherInfo :weather="weather" />
+		<MapWeather :onSelectCoords="getWeatherByCoords" :coords="mapCoords" />
 	</section>
 </template>
 
