@@ -5,7 +5,7 @@ export default {
 		getWeather: 'Получить данные',
 		location: 'Определить местоположение',
 		cityNotFound: 'Город не найден. Проверьте правильность написания.',
-		geoNotFound: 'Местоположение не найдено.',
+		geoNotFound: 'Местоположение не найдено',
 		apiError: 'Ошибка авторизации. Проверьте API-ключ.',
 		serverError: 'Ошибка сервера: {status}',
 		noResponse: 'Нет ответа от сервера. Проверьте соединение с интернетом.',
@@ -22,6 +22,7 @@ export default {
 		geoDenied: 'Не удалось получить геолокацию',
 		invalidCity: 'Пожалуйста, введите корректное название города.',
 		yourCity: 'Вашем городе',
+		unknownPlace: 'Неизвестное место',
 	},
 	en: {
 		title: 'Weather App',
@@ -46,5 +47,6 @@ export default {
 		geoDenied: 'Failed to get geolocation',
 		invalidCity: 'Please enter a valid city name.',
 		yourCity: 'your city',
+		unknownPlace: 'Unknown place',
 	},
 }

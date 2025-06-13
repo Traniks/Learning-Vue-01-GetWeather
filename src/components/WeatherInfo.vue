@@ -12,7 +12,14 @@
                     :src="`https://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`"
                     :alt="weather.weather[0].description" class="w-16 h-16" />
             </div>
-            <h2 class="text-xl font-bold mb-2">{{ t('weatherIn') }} {{ weather.name }}</h2>
+            <h2 class="text-xl font-bold mb-2">
+                {{ t('weatherIn') }}
+                {{ 
+                    (!weather.name || weather.name === '-')
+                        ? t('unknownPlace')
+                        : weather.name
+                }}
+            </h2>
             <p>{{ t('temperature') }}: {{ weather.main.temp }}°C</p>
             <p>{{ t('weather') }}: {{ weather.weather[0].description }}</p>
             <p>{{ t('humidity') }}: {{ weather.main.humidity }}%</p>

@@ -101,6 +101,12 @@ export const useWeatherStore = defineStore('weather', () => {
 					error.value = false
 					errorCode.value = ''
 					mapCoords.value = [latitude, longitude]
+
+					if (!res.data.name || res.data.name === '-') {
+						city.value = t('unknownPlace')
+					} else {
+						city.value = res.data.name
+					}
 				} catch (e) {
 					handleWeatherError(e, true)
 				} finally {
