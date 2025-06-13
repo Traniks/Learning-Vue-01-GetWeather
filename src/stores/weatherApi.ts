@@ -1,6 +1,10 @@
 import axios from 'axios'
 
-export async function fetchWeatherByCity(city, apiKey, lang = 'ru') {
+export async function fetchWeatherByCity(
+	city: string,
+	apiKey: string,
+	lang: string = 'ru'
+) {
 	return await axios.get('https://api.openweathermap.org/data/2.5/weather', {
 		params: {
 			q: city,
@@ -11,7 +15,12 @@ export async function fetchWeatherByCity(city, apiKey, lang = 'ru') {
 	})
 }
 
-export async function fetchWeatherByCoords(lat, lon, apiKey, lang = 'ru') {
+export async function fetchWeatherByCoords(
+	lat: number,
+	lon: number,
+	apiKey: string,
+	lang: string = 'ru'
+) {
 	return axios.get('https://api.openweathermap.org/data/2.5/weather', {
 		params: {
 			lat,

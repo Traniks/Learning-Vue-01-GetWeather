@@ -1,4 +1,4 @@
-<script setup>
+<script lang="ts" setup>
     defineProps(['weather']);
     import { useI18n } from 'vue-i18n'
     const { t } = useI18n()

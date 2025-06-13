@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import { fetchWeatherByCity, fetchWeatherByCoords } from '@/stores/weatherApi.js'
+import { fetchWeatherByCity, fetchWeatherByCoords } from '@/stores/weatherApi'
 import { useI18n } from 'vue-i18n'
 
 export const useWeatherStore = defineStore('weather', () => {
@@ -12,8 +12,10 @@ export const useWeatherStore = defineStore('weather', () => {
 
 	const weather = ref(null)
 	const loading = ref(false)
-	const mapCoords = ref([55.751244, 37.618423])
+	const mapCoords = ref<[number, number]>([55.751244, 37.618423])
+	
 	const apiKey = import.meta.env.VITE_WEATHER_API_KEY
+	if (!apiKey) throw new Error('API key is not set!')
 
 	const cityDisplay = computed(() => {
 		return city.value === '' ? `«${t('yourCity')}»` : `«${city.value}»`
@@ -23,13 +25,13 @@ export const useWeatherStore = defineStore('weather', () => {
 		errorCode.value ? t(errorCode.value) : ''
 	)
 
-	function updateCity(val) {
+	function updateCity(val: string) {
 		city.value = val
 		error.value = false
 		errorCode.value = ''
 	}
 
-	async function getWeather(e) {
+	async function getWeather(e: Event) {
 		if (e) e.preventDefault()
 		const cityPattern = /^[a-zA-Zа-яА-ЯёЁ\s-]+$/u
 		if (city.value.trim().length < 2 || !cityPattern.test(city.value)) {
@@ -56,7 +58,7 @@ export const useWeatherStore = defineStore('weather', () => {
 		}
 	}
 
-	async function getWeatherByCoords(coords) {
+	async function getWeatherByCoords(coords: [number, number]) {
 		loading.value = true
 		error.value = false
 		errorCode.value = ''
@@ -113,7 +115,7 @@ export const useWeatherStore = defineStore('weather', () => {
 		)
 	}
 
-	function handleWeatherError(e, isGeo = false) {
+	function handleWeatherError(e: any, isGeo = false) {
 		error.value = true
 		weather.value = null
 		if (e.response) {
